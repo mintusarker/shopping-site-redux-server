@@ -17,9 +17,16 @@ async function run() {
 
         app.get('/products', async (req, res) => {
             const query = {};
-            const result = await productCollection.find(query).toArray();
-            res.send(result);
+            const products = await productCollection.find(query).toArray();
+            const count = await productCollection.estimatedDocumentCount();
+            res.send({ count, products });
         });
+
+        // app.get('/product', async (req, res) => {
+        //     const query = {};
+        //     const products = await productCollection.find(query).toArray();
+        //     res.send(products);
+        // });
 
         app.post('/products', async (req, res) => {
             const query = req.body;
@@ -29,7 +36,8 @@ async function run() {
 
         app.delete('/products/:id', async (req, res) => {
             const id = req.params.id;
-            const filter = { _id: ObjectId(id) };
+            console.log(id);
+            const filter = { _id: new ObjectId(id) };
             const result = await productCollection.deleteOne(filter);
             res.send(result)
         });

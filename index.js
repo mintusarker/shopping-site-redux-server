@@ -13,7 +13,7 @@ const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology:
 
 async function run() {
     try {
-        const productCollection = client.db('productName').collection('products')
+        const productCollection = client.db('shoppingSite').collection('products')
 
         app.get('/products', async (req, res) => {
             const query = {};
@@ -27,6 +27,22 @@ async function run() {
         //     const products = await productCollection.find(query).toArray();
         //     res.send(products);
         // });
+
+        app.get('/search/:key', async (req, res) => {
+            let result = await productCollection.find({
+                '$or': [
+                    {
+                        category: { $regex: req.params.key }
+                    },
+                    {
+                        seller: { $regex: req.params.key }
+                    }
+                ]
+            });
+            res.send(result)
+            
+        });
+
 
         app.post('/products', async (req, res) => {
             const query = req.body;
